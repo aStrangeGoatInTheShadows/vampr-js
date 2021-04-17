@@ -1,6 +1,7 @@
 const treeLogger = require('tree-logger');
 
 const log = console.log;
+let sum = 0;
 
 class Vampire {
   constructor(name, yearConverted) {
@@ -8,21 +9,23 @@ class Vampire {
     this.yearConverted = yearConverted;
     this.offspring = [];
     this.creator = null;
+    this.traverse = false;
+    this.Descendents = 0;
   }
 
   /** Simple tree methods **/
 
   // Adds the vampire as an offspring of this vampire
-  addOffspring(vampire) {    
+  addOffspring(vampire) {
     this.offspring.push(vampire);
     vampire.creator = this;
   }
-  
+
   // Returns the total number of vampires created by that vampire
   get numberOfOffspring() {
     return this.offspring.length;
   }
-  
+
   // Returns the number of vampires away from the original vampire this vampire is
   get numberOfVampiresFromOriginal() {
     let vamp = this;
@@ -40,23 +43,77 @@ class Vampire {
   isOffspring(vampire) {
     return this.offspring.includes(vampire);
   }
-  
+
   // Returns true if this vampire is more senior than the other vampire. (Who is closer to the original vampire)
   isMoreSeniorThan(vampire) {
-    return (this.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal)    
+    return (this.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal)
   }
 
+  /** Tree traversal methods **/
+
   depthFirstTraversal() {
-
-    console.log(this.name); // 1
-
     for (const childNode of this.offspring) {
       childNode.depthFirstTraversal(); // 2
     }
   }
-  
+
+  // ........ it gets the root....
+  get root() {
+    let vamp = this;
+
+    while (vamp.creator) {
+      vamp = vamp.creator;
+    }
+
+    return vamp;
+  }
+
+
+
+  // Returns the vampire object with that name, or null if no vampire exists with that name
+  vampireWithName(name) {
+    let vamp = null;
+    log(this.name);
+    // log(name);
+
+    if (this.name === name) {
+      return this;
+    }
+
+    for (const childNode of this.offspring) {
+      if (childNode.name === name) {
+        return childNode;
+      }
+      vamp = childNode.vampireWithName(name);
+    }
+
+    return vamp;
+  }
+  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
+  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
+  // Returns the total number of vampires that exist
+
+  get totalDescendents() {
+    let parent = this;
+    let sum = 0;
+    let next = 0;
+
+    while (parent.offspring.length > 0) {
+      sum += parent.offspring.length
+      if()
+    }
+
+    
+    
+  }
+
+  // Returns an array of all the vampires that were converted after 1980
+  get allMillennialVampires() {
+
+  }
+
   /** Stretch **/
-  
+
   // Returns the closest common ancestor of two vampires.
   // The closest common anscestor should be the more senior vampire if a direct ancestor is used.
   // For example:
@@ -70,36 +127,38 @@ class Vampire {
     //// Make oldMan the most senior vampire
     let oldMan = this;
     let youngMan = vampire;
-    if (vampire.isMoreSeniorThan(this)){
+    if (vampire.isMoreSeniorThan(this)) {
       oldMan = vampire;
       youngMan = this;
     }
 
     // if oldman has no creator, he is root so return self
-    if(!oldMan.creator) {
+    if (!oldMan.creator) {
       return oldMan;
     }
     // if young man is old mans child
     if (oldMan.offspring.includes(youngMan)) {
       return oldMan;
     }
-    
+
     if (youngMan.creator === oldMan.creator) {
       return youngMan.creator;
     }
 
     let parent = oldMan.creator;
 
-    for(let i = parent.numberOfVampiresFromOriginal; i >= 0; i--){
-      if(parent.offspring.includes(youngMan)){
+    for (let i = parent.numberOfVampiresFromOriginal; i >= 0; i--) {
+      if (parent.offspring.includes(youngMan)) {
         return parent;
       }
       parent = parent.creator;
     }
-    
+
     return null;
   }
 }
+
+
 
 // └── root
 //     ├── 1
@@ -110,20 +169,6 @@ class Vampire {
 //         └── 5
 //             └── 6
 //                 └── 7
-
-//////////////////////////////////// THIS PROBABLY NEEDS RECURSION ///////////////////////////////////////////
-////////////////////////////////////  NEED TO CHECKALL SIBLINGS AND THEIR SIBLINGS FOR THE YOUNG ONE ///////////////////////////////////////////
-
-// //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
-// const ted = new Vampire (`Ted`, 34); // original
-// const vlad = new Vampire ('Vlad', 37); // second
-// const fred = new Vampire ('Fred', 40);
-
-// ted.addOffspring(vlad);
-// vlad.addOffspring(fred);
-// // Returns the total number of vampires created by that vampire
-// //log(ted.closestCommonAncestor(fred));
-
 
 let rootVampire = new Vampire("root");
 
@@ -145,24 +190,14 @@ offspring5.addOffspring(offspring6);
 offspring6.addOffspring(offspring7);
 offspring2.addOffspring(offspring8);
 
-// log(offspring1);
-// log('-------------------------------------------');
-// log(offspring2);
-// log('-------------------------------------------');
-//  offspring8.closestCommonAncestor(offspring7);
+// rootVampire.vampireWithName(offspring7.name);
 
-const root = rootVampire;
+log(rootVampire.totalDescendents);
+// root.depthFirstTraversal();
 
-root.depthFirstTraversal();
+// const aTree = treeLogger(root, (node) => node.offspring, (node) => node.name);
+// log(aTree);
 
-const aTree = treeLogger(root, (node) => node.offspring, (node) => node.name);
-log(aTree);
 
-// it("should be the root vampire for first two offspring", () => {
-  //   expect(offspring1.closestCommonAncestor(offspring2).name).to.equal(rootVampire.name);
-  // })
-  
-  module.exports = Vampire;
+module.exports = Vampire;
 
-  //1) should be offspring 3 for offspring 4 and 7
-  
