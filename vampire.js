@@ -2,6 +2,7 @@ const treeLogger = require('tree-logger');
 
 const log = console.log;
 let sum = 0;
+let milArr = [];
 
 class Vampire {
   constructor(name, yearConverted) {
@@ -73,8 +74,6 @@ class Vampire {
   // Returns the vampire object with that name, or null if no vampire exists with that name
   vampireWithName(name) {
     let vamp = null;
-    log(this.name);
-    // log(name);
 
     if (this.name === name) {
       return this;
@@ -89,27 +88,57 @@ class Vampire {
 
     return vamp;
   }
-  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
-  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
+
   // Returns the total number of vampires that exist
-
   get totalDescendents() {
-    let parent = this;
-    let sum = 0;
-    let next = 0;
+    let total = 0;
 
-    while (parent.offspring.length > 0) {
-      sum += parent.offspring.length
-      if()
+    total += this.numberOfOffspring;
+
+    for (let child of this.offspring) {
+      total += child.totalDescendents;
     }
 
-    
-    
+    return total;
   }
+  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
+  //////////////////////////////////////////// WORKING HERE  ////////////////////////////////////
 
+
+    // // Returns an array of all the vampires that were converted after 1980
+    // get allMillennialVampires() {
+    //   let allMillennials = [];
+      
+    //   console.log(this.name + " was Converted: " +  this.yearConverted);
+    //   if (this.yearConverted > 1980) {
+    //     log('pushed');
+    //     allMillennials.push(this);
+    //   }
+      
+    //   for (let offspring of this.offspring) {
+    //     let childMillennials = offspring.allMillennialVampires
+    //     if (childMillennials != null) {
+    //       allMillennials = allMillennials.concat(childMillennials)
+    //     }
+    //   }
+      
+    //   return allMillennials;
+    // }
+  
+  
   // Returns an array of all the vampires that were converted after 1980
   get allMillennialVampires() {
+    let arr = [];
 
+    if(this.yearConverted > 1980) {
+      arr.push(this.name);
+    }
+
+    for (let child of this.offspring) {
+      arr.concat(child.allMillennialVampires);
+    }
+    log(arr);
+    return arr;
   }
 
   /** Stretch **/
@@ -170,16 +199,16 @@ class Vampire {
 //             └── 6
 //                 └── 7
 
-let rootVampire = new Vampire("root");
+let rootVampire = new Vampire("root", 1);
 
-let offspring1 = new Vampire("1");
-let offspring2 = new Vampire("2");
-let offspring3 = new Vampire("3");
-let offspring4 = new Vampire("4");
-let offspring5 = new Vampire("5");
-let offspring6 = new Vampire("6");
-let offspring7 = new Vampire("7");
-let offspring8 = new Vampire("8");
+let offspring1 = new Vampire("a", 1000);
+let offspring2 = new Vampire("b", 900);
+let offspring3 = new Vampire("c", 1400);
+let offspring4 = new Vampire("d", 1890);
+let offspring5 = new Vampire("e", 1990);
+let offspring6 = new Vampire("f", 2000);
+let offspring7 = new Vampire("g", 2010);
+let offspring8 = new Vampire("h", 2017);
 
 rootVampire.addOffspring(offspring1);
 rootVampire.addOffspring(offspring2);
@@ -190,13 +219,14 @@ offspring5.addOffspring(offspring6);
 offspring6.addOffspring(offspring7);
 offspring2.addOffspring(offspring8);
 
+arr = rootVampire.allMillennialVampires;
+for (let v of arr) {
+  log(v.name);
+}
+
 // rootVampire.vampireWithName(offspring7.name);
 
-log(rootVampire.totalDescendents);
 // root.depthFirstTraversal();
-
-// const aTree = treeLogger(root, (node) => node.offspring, (node) => node.name);
-// log(aTree);
 
 
 module.exports = Vampire;
