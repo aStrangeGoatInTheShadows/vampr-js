@@ -45,6 +45,15 @@ class Vampire {
   isMoreSeniorThan(vampire) {
     return (this.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal)    
   }
+
+  depthFirstTraversal() {
+
+    console.log(this.name); // 1
+
+    for (const childNode of this.offspring) {
+      childNode.depthFirstTraversal(); // 2
+    }
+  }
   
   /** Stretch **/
   
@@ -82,8 +91,6 @@ class Vampire {
     let parent = oldMan.creator;
 
     for(let i = parent.numberOfVampiresFromOriginal; i >= 0; i--){
-      log(`${i}th time ran`)
-      log(parent);
       if(parent.offspring.includes(youngMan)){
         return parent;
       }
@@ -93,6 +100,16 @@ class Vampire {
     return null;
   }
 }
+
+// └── root
+//     ├── 1
+//     ├── 2
+//     |   └── 8
+//     └── 3
+//         ├── 4
+//         └── 5
+//             └── 6
+//                 └── 7
 
 //////////////////////////////////// THIS PROBABLY NEEDS RECURSION ///////////////////////////////////////////
 ////////////////////////////////////  NEED TO CHECKALL SIBLINGS AND THEIR SIBLINGS FOR THE YOUNG ONE ///////////////////////////////////////////
@@ -132,9 +149,12 @@ offspring2.addOffspring(offspring8);
 // log('-------------------------------------------');
 // log(offspring2);
 // log('-------------------------------------------');
- offspring8.closestCommonAncestor(offspring7);
+//  offspring8.closestCommonAncestor(offspring7);
 
 const root = rootVampire;
+
+root.depthFirstTraversal();
+
 const aTree = treeLogger(root, (node) => node.offspring, (node) => node.name);
 log(aTree);
 
